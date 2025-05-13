@@ -61,10 +61,14 @@ class TodoList extends Component {
 
     onAddTask() {
         this.state.todos.push({text: this.state.currentInput, done: false});
+        this.update();
     }
 
     onAddInputChange(event) {
+        console.log('b', this.state.currentInput);
         this.state.currentInput = event.target.value;
+        console.log('a', this.state.currentInput);
+        this.update();
     }
 
     onMarkedDone(index) {
@@ -105,7 +109,9 @@ class TodoList extends Component {
                         id: "new-todo",
                         type: "text",
                         placeholder: "Задание",
+                        value: this.state.currentInput,
                     },
+                    {},
                     {
                         input: this.onAddInputChange.bind(this),
                     }
