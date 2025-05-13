@@ -70,7 +70,12 @@ class TodoList extends Component {
     }
 
     onDeleteTask(index) {
-        this.state.todos.splice(index, 1);
+        if (this.state.todos.at(index).isTriedDelete) {
+            this.state.todos.splice(index, 1);
+        } else {
+            this.state.todos.at(index).isTriedDelete = true;
+        }
+
         this.update();
     }
 
@@ -80,8 +85,8 @@ class TodoList extends Component {
                 (todo, index) =>
                     new Task(
                         todo,
-                        () => this.onMarkedDone(index),
-                        () => this.onDeleteTask(index)).getDomNode());
+                        () => this.onMarkedDone.bind(this)(index),
+                        () => this.onDeleteTask.bind(this)(index)).getDomNode());
 
         return createElement("div", {class: "todo-list"}, [
             createElement("h1", {}, "TODO List"),
@@ -150,7 +155,7 @@ class Task extends Component {
                 createElement("label", {}, this.todo.text),
                 createElement(
                     "button",
-                    {},
+                    { class: this.todo.isTriedDelete ? "confirm-delete" : "",},
                     "🗑️",
                     {click: () => this.onDeleteTask(),}),
             ])
