@@ -55,12 +55,12 @@ class TodoList extends Component {
                 {text: "Сделать практику", done: false},
                 {text: "Пойти домой", done: false},
             ],
-            currentInput: '',
         };
+        this.addTaskComponent = new AddTask(this.onAddTask.bind(this));
     }
 
-    onAddTask() {
-        this.state.todos.push({text: this.state.currentInput, done: false});
+    onAddTask(text) {
+        this.state.todos.push({text, done: false});
         this.saveState();
         this.update();
     }
@@ -74,16 +74,15 @@ class TodoList extends Component {
     }
 
     onMarkedDone(index) {
-      console.log(index);
-      this.state.todos[index].done = !this.state.todos[index].done;
-      this.saveState();
-      this.update();
+        this.state.todos[index].done = !this.state.todos[index].done;
+        this.saveState();
+        this.update();
     }
 
     onDeleteTask(index) {
-      this.state.todos.splice(index, 1);
-      this.saveState();
-      this.update();
+        this.state.todos.splice(index, 1);
+        this.saveState();
+        this.update();
     }
 
     saveState() {
@@ -96,44 +95,52 @@ class TodoList extends Component {
     }
 
     render() {
-        const todoItems = this.state.todos.map((todo, index) =>
-            createElement("li", {
-              class: todo.done ? ["completed"] : []
-            }, [
-                createElement("input", todo.done ? {
-                  type: "checkbox",
-                  checked: "",
-                } : {
-                  type: "checkbox",
-                }, [], {
-                  change: () => this.onMarkedDone(index),
-                }),
-                createElement("label", {}, todo.text),
-                createElement("button", {}, "🗑️", {
-                  click: () => this.onDeleteTask(index),
-                }),
-            ])
-        );
+        const todoItems = this.state.todos
+            .map(
+                (todo, index) =>
+                    new Task(
+                        todo,
+                        () => this.onMarkedDone(index),
+                        () => this.onDeleteTask(index)).getDomNode());
 
         return createElement("div", {class: "todo-list"}, [
             createElement("h1", {}, "TODO List"),
-            createElement("div", {class: "add-todo"}, [
-                createElement("input", {
-                        id: "new-todo",
-                        type: "text",
-                        placeholder: "Задание",
-                        value: this.state.currentInput,
-                    },
-                    {},
-                    {
-                        input: this.onAddInputChange.bind(this),
-                    }
-                ),
-                createElement("button", {id: "add-btn"}, "+", {
-                    click: this.onAddTask.bind(this),
-                }),
-            ]),
+            this.addTaskComponent.getDomNode(),
             createElement("ul", {id: "todos"}, todoItems),
+        ]);
+    }
+}
+
+class AddTask extends Component {
+    constructor(onAddTask) {
+        super();
+        this.onAddTask = onAddTask;
+        this.state = {
+            currentInput: '',
+        };
+    }
+
+    onAddInputChange(event) {
+        this.state.currentInput = event.target.value;
+        this.update();
+    }
+
+    render() {
+        return createElement("div", {class: "add-todo"}, [
+            createElement("input", {
+                    id: "new-todo",
+                    type: "text",
+                    placeholder: "Задание",
+                    value: this.state.currentInput,
+                },
+                [],
+                {
+                    input: this.onAddInputChange.bind(this),
+                }
+            ),
+            createElement("button", {id: "add-btn"}, "+", {
+                click: () => this.onAddTask(this.state.currentInput),
+            }),
         ]);
     }
 }
@@ -141,3 +148,31 @@ class TodoList extends Component {
 document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(new TodoList().getDomNode());
 });
+
+class Task extends Component {
+    constructor(todo, onMarkedDone, onDeleteTask) {
+        super();
+        this.todo = todo;
+        this.onMarkedDone = onMarkedDone;
+        this.onDeleteTask = onDeleteTask;
+    }
+
+    render() {
+        return createElement(
+            "li",
+            {class: this.todo.done ? ["completed"] : []},
+            [
+                createElement(
+                    "input",
+                    this.todo.done ? {type: "checkbox", checked: "",} : {type: "checkbox",},
+                    [],
+                    {change: () => this.onMarkedDone(),}),
+                createElement("label", {}, this.todo.text),
+                createElement(
+                    "button",
+                    {},
+                    "🗑️",
+                    {click: () => this.onDeleteTask(),}),
+            ])
+    }
+}
