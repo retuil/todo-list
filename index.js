@@ -118,7 +118,19 @@ class AddTask extends Component {
 
     onAddInputChange(event) {
         this.state.currentInput = event.target.value;
+        this._inputFocused = document.activeElement === event.target;
         this.update();
+        if (this._inputFocused) {
+            this.focusInput();
+        }
+    }
+
+    focusInput() {
+        const input = this._domNode.querySelector('#new-todo');
+        if (input) {
+            input.focus();
+            input.selectionStart = input.selectionEnd = input.value.length;
+        }
     }
 
     render() {
