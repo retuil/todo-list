@@ -51,28 +51,50 @@ class TodoList extends Component {
         super();
         this.state = {
             todos: [
-                {text: "Сделать домашку"},
-                {text: "Сделать практику"},
-                {text: "Пойти домой"},
+                {text: "Сделать домашку", done: false},
+                {text: "Сделать практику", done: false},
+                {text: "Пойти домой", done: false},
             ],
             currentInput: '',
         };
     }
 
     onAddTask() {
-        this.state.todos.push({text: this.state.currentInput});
+        this.state.todos.push({text: this.state.currentInput, done: false});
     }
 
     onAddInputChange(event) {
         this.state.currentInput = event.target.value;
     }
 
+    onMarkedDone(index) {
+      console.log(index);
+      this.state.todos[index].done = !this.state.todos[index].done;
+      this.update();
+    }
+
+    onDeleteTask(index) {
+      this.state.todos.splice(index, 1);
+      this.update();
+    }
+
     render() {
-        const todoItems = this.state.todos.map((todo) =>
-            createElement("li", {}, [
-                createElement("input", {type: "checkbox"}),
+        const todoItems = this.state.todos.map((todo, index) =>
+            createElement("li", {
+              class: todo.done ? ["completed"] : []
+            }, [
+                createElement("input", todo.done ? {
+                  type: "checkbox",
+                  checked: "",
+                } : {
+                  type: "checkbox",
+                }, [], {
+                  change: () => this.onMarkedDone(index),
+                }),
                 createElement("label", {}, todo.text),
-                createElement("button", {}, "🗑️"),
+                createElement("button", {}, "🗑️", {
+                  click: () => this.onDeleteTask(index),
+                }),
             ])
         );
 
