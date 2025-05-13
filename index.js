@@ -65,14 +65,6 @@ class TodoList extends Component {
         this.update();
     }
 
-    onAddInputChange(event) {
-        console.log('b', this.state.currentInput);
-        this.state.currentInput = event.target.value;
-        console.log('a', this.state.currentInput);
-        this.saveState();
-        this.update();
-    }
-
     onMarkedDone(index) {
         this.state.todos[index].done = !this.state.todos[index].done;
         this.saveState();
@@ -131,16 +123,16 @@ class AddTask extends Component {
 
     render() {
         return createElement("div", {class: "add-todo"}, [
-            createElement("input", {
+            createElement(
+                "input",
+                {
                     id: "new-todo",
                     type: "text",
                     placeholder: "Задание",
                     value: this.state.currentInput,
                 },
                 [],
-                {
-                    input: this.onAddInputChange.bind(this),
-                }
+                {input: this.onAddInputChange.bind(this),}
             ),
             createElement("button", {id: "add-btn"}, "+", {
                 click: () => this.onAddTask(this.state.currentInput),
@@ -174,7 +166,7 @@ class Task extends Component {
                 createElement("label", {}, this.todo.text),
                 createElement(
                     "button",
-                    { class: this.todo.isTriedDelete ? "confirm-delete" : "",},
+                    {class: this.todo.isTriedDelete ? "confirm-delete" : "",},
                     "🗑️",
                     {click: () => this.onDeleteTask(),}),
             ])
