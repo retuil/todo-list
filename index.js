@@ -34,16 +34,16 @@ class Component {
     constructor() {
     }
 
-  getDomNode() {
-    this._domNode = this.render();
-    return this._domNode;
-  }
+    getDomNode() {
+        this._domNode = this.render();
+        return this._domNode;
+    }
 
-  update() {
-    const newNode = this.render();
-    this._domNode.replaceWith(newNode);
-    this._domNode = newNode;
-  }
+    update() {
+        const newNode = this.render();
+        this._domNode.replaceWith(newNode);
+        this._domNode = newNode;
+    }
 }
 
 class TodoList extends Component {
