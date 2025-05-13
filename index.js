@@ -65,7 +65,6 @@ class TodoList extends Component {
     }
 
     onMarkedDone(index) {
-        console.log(index);
         this.state.todos[index].done = !this.state.todos[index].done;
         this.update();
     }
@@ -76,24 +75,13 @@ class TodoList extends Component {
     }
 
     render() {
-        const todoItems = this.state.todos.map((todo, index) =>
-            createElement("li", {
-                class: todo.done ? ["completed"] : []
-            }, [
-                createElement("input", todo.done ? {
-                    type: "checkbox",
-                    checked: "",
-                } : {
-                    type: "checkbox",
-                }, [], {
-                    change: () => this.onMarkedDone(index),
-                }),
-                createElement("label", {}, todo.text),
-                createElement("button", {}, "🗑️", {
-                    click: () => this.onDeleteTask(index),
-                }),
-            ])
-        );
+        const todoItems = this.state.todos
+            .map(
+                (todo, index) =>
+                    new Task(
+                        todo,
+                        () => this.onMarkedDone(index),
+                        () => this.onDeleteTask(index)).getDomNode());
 
         return createElement("div", {class: "todo-list"}, [
             createElement("h1", {}, "TODO List"),
@@ -140,3 +128,31 @@ class AddTask extends Component {
 document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(new TodoList().getDomNode());
 });
+
+class Task extends Component {
+    constructor(todo, onMarkedDone, onDeleteTask) {
+        super();
+        this.todo = todo;
+        this.onMarkedDone = onMarkedDone;
+        this.onDeleteTask = onDeleteTask;
+    }
+
+    render() {
+        return createElement(
+            "li",
+            {class: this.todo.done ? ["completed"] : []},
+            [
+                createElement(
+                    "input",
+                    this.todo.done ? {type: "checkbox", checked: "",} : {type: "checkbox",},
+                    [],
+                    {change: () => this.onMarkedDone(),}),
+                createElement("label", {}, this.todo.text),
+                createElement(
+                    "button",
+                    {},
+                    "🗑️",
+                    {click: () => this.onDeleteTask(),}),
+            ])
+    }
+}
