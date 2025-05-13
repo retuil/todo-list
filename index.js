@@ -49,7 +49,7 @@ class Component {
 class TodoList extends Component {
     constructor() {
         super();
-        this.state = {
+        this.state = this.loadState() || {
             todos: [
                 {text: "Сделать домашку", done: false},
                 {text: "Сделать практику", done: false},
@@ -61,11 +61,21 @@ class TodoList extends Component {
 
     onAddTask(text) {
         this.state.todos.push({text, done: false});
+        this.saveState();
+        this.update();
+    }
+
+    onAddInputChange(event) {
+        console.log('b', this.state.currentInput);
+        this.state.currentInput = event.target.value;
+        console.log('a', this.state.currentInput);
+        this.saveState();
         this.update();
     }
 
     onMarkedDone(index) {
         this.state.todos[index].done = !this.state.todos[index].done;
+        this.saveState();
         this.update();
     }
 
@@ -75,8 +85,17 @@ class TodoList extends Component {
         } else {
             this.state.todos.at(index).isTriedDelete = true;
         }
-
+        this.saveState();
         this.update();
+    }
+
+    saveState() {
+        localStorage.setItem("todo-list-state", JSON.stringify(this.state));
+    }
+
+    loadState() {
+        const data = localStorage.getItem("todo-list-state");
+        return data ? JSON.parse(data) : null;
     }
 
     render() {
